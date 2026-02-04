@@ -67,6 +67,11 @@ This will run database migrations on next deploy.
 
 ## 🔧 Troubleshooting
 
+**"Creating plan with railpack" error?**
+- ✅ **FIXED!** Added proper Railway configuration files
+- Railway now knows how to handle the monorepo structure
+- nixpacks.toml and railway.json files added for both services
+
 **Build fails?**
 - Check Railway build logs
 - Make sure all dependencies are in package.json
