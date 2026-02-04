@@ -65,9 +65,5 @@
     "@vitest/coverage-v8": "^1.1.0",
     "prettier": "^3.1.1",
     "vite-plugin-compression": "^0.5.1"
-  },
-  "engines": {
-    "node": ">=20.10.0",
-    "npm": ">=10.2.0"
   }
 }
