@@ -11,9 +11,9 @@
 
 ### Step 2: Connect & Push Code
 ```bash
-# Copy your repository URL from GitHub, then run:
-git remote add origin https://github.com/YOUR_USERNAME/money-saving-app.git
-git push -u origin main
+# Your repository is already connected!
+# Code is already pushed to: https://github.com/shivamdhiman17296-byte/money-saving-app
+# ✅ Ready for Railway deployment!
 ```
 
 ### Step 3: Deploy to Railway
@@ -36,7 +36,7 @@ In Railway project settings → **Variables**, add:
 
 ```
 DATABASE_URL=postgresql://... (from step 4)
-JWT_SECRET=your_super_secret_jwt_key_change_in_production_32_chars_min
+JWT_SECRET=0fb31fb48d0958d9b70c2332a25faf2158a971c6323cfd553927d236df44ebc4
 NODE_ENV=production
 FRONTEND_URL=https://your-frontend-url.up.railway.app
 ```
