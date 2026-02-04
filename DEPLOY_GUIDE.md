@@ -72,9 +72,10 @@ This will run database migrations on next deploy.
 - Railway now knows how to handle the monorepo structure
 - nixpacks.toml and railway.json files added for both services
 
-**Build fails?**
-- Check Railway build logs
-- Make sure all dependencies are in package.json
+**"Building failed in railpack" error?**
+- ✅ **FIXED!** Corrected package.json JSON syntax errors
+- Removed duplicate "engines" keys causing build failures
+- Both frontend and backend now build successfully locally
 
 **Database connection fails?**
 - Verify DATABASE_URL is correct
