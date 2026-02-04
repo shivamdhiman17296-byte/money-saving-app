@@ -1,106 +1,265 @@
-import { useState } from 'react';
-import { Send, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Send, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { Card, CardHeader, Button } from '../../components/UI';
+import { usePaymentStore } from '../../store/paymentStore';
+import { useAuthStore } from '../../store/authStore';
+import toast from 'react-hot-toast';
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 export default function UPIPayments() {
-  const [paymentStep, setPaymentStep] = useState<'form' | 'confirm' | 'success'>('form');
+  const [paymentStep, setPaymentStep] = useState<'form' | 'confirm' | 'loading' | 'success'>('form');
   const [formData, setFormData] = useState({
     recipientUPI: '',
     recipientName: '',
     amount: '',
     description: '',
   });
-  const [pendingPayments] = useState([
-    { id: 1, name: 'John Doe', upi: 'john@upi', amount: 500, date: '2026-01-28', status: 'pending' },
-    { id: 2, name: 'Jane Smith', upi: 'jane@upi', amount: 1500, date: '2026-01-29', status: 'pending' },
-  ]);
+
+  const { initiatePayment, verifyPayment, error, clearError, payments } = usePaymentStore();
+  const { user } = useAuthStore();
+
+  // Load Razorpay script on mount
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPaymentStep('confirm');
+  const validateForm = () => {
+    if (!formData.recipientUPI || !formData.recipientName || !formData.amount) {
+      toast.error('Please fill all required fields');
+      return false;
+    }
+
+    const amount = parseFloat(formData.amount);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error('Please enter a valid amount');
+      return false;
+    }
+
+    if (amount < 1) {
+      toast.error('Minimum amount is ₹1');
+      return false;
+    }
+
+    if (amount > 100000) {
+      toast.error('Maximum amount is ₹100,000');
+      return false;
+    }
+
+    const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z]+$/;
+    if (!upiRegex.test(formData.recipientUPI)) {
+      toast.error('Please enter a valid UPI ID (e.g., username@bankname)');
+      return false;
+    }
+
+    return true;
   };
 
-  const handleConfirm = () => {
-    setPaymentStep('success');
-    setTimeout(() => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      setPaymentStep('confirm');
+    }
+  };
+
+  const handleConfirm = async () => {
+    try {
+      setPaymentStep('loading');
+      clearError();
+
+      const paymentData = await initiatePayment({
+        amount: parseFloat(formData.amount),
+        recipientUPI: formData.recipientUPI,
+        recipientName: formData.recipientName,
+        description: formData.description || 'UPI Payment',
+        email: user?.email || 'user@example.com',
+        phone: user?.phone_number || '9999999999',
+      });
+
+      const options = {
+        key: (import.meta as any).env.VITE_RAZORPAY_KEY || 'rzp_test_key',
+        amount: Math.round(parseFloat(formData.amount) * 100),
+        currency: 'INR',
+        name: 'MoneySaver Pro',
+        description: formData.description || 'UPI Payment',
+        order_id: paymentData.orderId || paymentData.id,
+        receipt: `receipt_${Date.now()}`,
+        prefill: {
+          name: user?.full_name || 'User',
+          email: user?.email,
+          contact: user?.phone_number,
+        },
+        notes: {
+          recipientUPI: formData.recipientUPI,
+          recipientName: formData.recipientName,
+        },
+        theme: { color: '#6366f1' },
+        method: {
+          upi: true,
+          card: false,
+          netbanking: false,
+          wallet: false,
+        },
+        handler: async (response: any) => {
+          try {
+            const isVerified = await verifyPayment({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            if (isVerified) {
+              setPaymentStep('success');
+              toast.success(`₹${formData.amount} sent successfully to ${formData.recipientName}!`);
+
+              setTimeout(() => {
+                setPaymentStep('form');
+                setFormData({
+                  recipientUPI: '',
+                  recipientName: '',
+                  amount: '',
+                  description: '',
+                });
+              }, 3000);
+            } else {
+              toast.error('Payment verification failed. Please try again.');
+              setPaymentStep('form');
+            }
+          } catch (err: any) {
+            console.error('Payment verification error:', err);
+            toast.error('Payment verification failed');
+            setPaymentStep('form');
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentStep('form');
+            toast.error('Payment cancelled');
+          },
+        },
+      };
+
+      if (window.Razorpay) {
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        toast.error('Razorpay is not loaded. Please try again.');
+        setPaymentStep('form');
+      }
+    } catch (err: any) {
+      console.error('Payment initiation error:', err);
+      toast.error(error || 'Failed to initiate payment');
       setPaymentStep('form');
-      setFormData({ recipientUPI: '', recipientName: '', amount: '', description: '' });
-    }, 3000);
+    }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Payment Form */}
       {paymentStep === 'form' && (
-        <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-8">Send Money via UPI</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="group">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Recipient UPI ID</label>
-                <input
-                  type="text"
-                  name="recipientUPI"
-                  value={formData.recipientUPI}
-                  onChange={handleChange}
-                  placeholder="user@bank"
-                  className="w-full px-5 py-3 border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all duration-300 bg-gradient-to-r from-purple-50 to-pink-50 hover:shadow-md"
-                  required
-                />
+        <Card variant="elevated">
+          <CardHeader title="Send Money via UPI" subtitle="Quick and secure UPI transfers" />
+          <div className="mt-8 p-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="bg-red-50 border-2 border-red-300 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+                  <AlertCircle className="w-4 h-4 inline mr-2" />
+                  {error}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Recipient UPI ID *</label>
+                  <input
+                    type="text"
+                    name="recipientUPI"
+                    value={formData.recipientUPI}
+                    onChange={handleChange}
+                    placeholder="user@upi"
+                    className="w-full px-5 py-3 text-gray-900 border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all duration-300 bg-gradient-to-r from-purple-50 to-pink-50 hover:shadow-md"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Format: username@bankname</p>
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Recipient Name *</label>
+                  <input
+                    type="text"
+                    name="recipientName"
+                    value={formData.recipientName}
+                    onChange={handleChange}
+                    placeholder="John Doe"
+                    className="w-full px-5 py-3 text-gray-900 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all duration-300 bg-gradient-to-r from-indigo-50 to-cyan-50 hover:shadow-md"
+                    required
+                  />
+                </div>
               </div>
 
               <div className="group">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Recipient Name</label>
-                <input
-                  type="text"
-                  name="recipientName"
-                  value={formData.recipientName}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  className="w-full px-5 py-3 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all duration-300 bg-gradient-to-r from-indigo-50 to-cyan-50 hover:shadow-md"
-                  required
-                />
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Amount (₹) *</label>
+                <div className="relative">
+                  <span className="absolute left-5 top-4 text-gray-500 text-lg font-semibold">₹</span>
+                  <input
+                    type="number"
+                    name="amount"
+                    value={formData.amount}
+                    onChange={handleChange}
+                    placeholder="1000"
+                    min="1"
+                    max="100000"
+                    step="1"
+                    className="w-full pl-10 pr-5 py-3 text-gray-900 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500/50 focus:border-green-500 outline-none transition-all duration-300 bg-gradient-to-r from-green-50 to-emerald-50 hover:shadow-md"
+                    required
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Min: ₹1 | Max: ₹100,000</p>
               </div>
-            </div>
 
-            <div className="group">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Amount (₹)</label>
-              <input
-                type="number"
-                name="amount"
-                value={formData.amount}
-                onChange={handleChange}
-                placeholder="1000"
-                className="w-full px-5 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500/50 focus:border-green-500 outline-none transition-all duration-300 bg-gradient-to-r from-green-50 to-emerald-50 hover:shadow-md"
-                required
-              />
-            </div>
+              <div className="group">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Description (Optional)</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Payment for..."
+                  rows={3}
+                  className="w-full px-5 py-3 text-gray-900 border-2 border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 outline-none transition-all duration-300 bg-gradient-to-r from-orange-50 to-red-50 hover:shadow-md resize-none"
+                  maxLength={200}
+                />
+                <p className="text-xs text-gray-500 mt-1">{formData.description.length}/200</p>
+              </div>
 
-            <div className="group">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Description (Optional)</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Payment for..."
-                rows={3}
-                className="w-full px-5 py-3 border-2 border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 outline-none transition-all duration-300 bg-gradient-to-r from-orange-50 to-red-50 hover:shadow-md resize-none"
-              />
-            </div>
+              <Button type="submit" variant="primary" className="w-full">
+                <Send className="w-5 h-5 mr-2" />
+                Continue to Payment
+              </Button>
 
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/40 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center space-x-2 group border border-white/20"
-            >
-              <Send className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-              <span>Continue</span>
-            </button>
-          </form>
-        </div>
+              <p className="text-xs text-gray-500 text-center">
+                Secure payment powered by Razorpay • Your data is encrypted
+              </p>
+            </form>
+          </div>
+        </Card>
       )}
 
       {/* Confirmation Screen */}
@@ -146,6 +305,18 @@ export default function UPIPayments() {
         </div>
       )}
 
+      {/* Loading Screen */}
+      {paymentStep === 'loading' && (
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-2xl p-12 text-center border border-blue-200/50 animate-in fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full mb-6 shadow-lg shadow-blue-500/40">
+            <Loader className="w-10 h-10 text-white animate-spin" />
+          </div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">Processing Payment</h2>
+          <p className="text-gray-700 text-lg mb-2 font-medium">Please wait while we process your payment</p>
+          <p className="text-sm text-gray-500">Do not close this window</p>
+        </div>
+      )}
+
       {/* Success Screen */}
       {paymentStep === 'success' && (
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-2xl p-12 text-center border border-green-200/50 animate-in zoom-in">
@@ -158,43 +329,39 @@ export default function UPIPayments() {
         </div>
       )}
 
-      {/* Pending Payments */}
-      {paymentStep === 'form' && (
-        <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">Pending Payments</h3>
-          <div className="space-y-3">
-            {pendingPayments.map((payment) => (
-              <div key={payment.id} className="flex items-center justify-between p-5 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 rounded-xl hover:shadow-lg hover:shadow-yellow-500/20 transition-all duration-300 hover:scale-102 border border-yellow-200/50 group cursor-pointer">
-                <div>
-                  <p className="font-bold text-gray-800 group-hover:text-indigo-700 transition-colors">{payment.name}</p>
-                  <p className="text-sm text-gray-600 mt-1">{payment.upi}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-xl text-gray-800">₹{payment.amount}</p>
-                  <div className="flex items-center space-x-1 text-yellow-600 text-sm font-medium mt-1">
-                    <Clock className="w-4 h-4" />
-                    <span>Pending</span>
+      {/* Transaction History */}
+      {paymentStep === 'form' && payments.length > 0 && (
+        <Card variant="elevated">
+          <CardHeader title="Transaction History" subtitle={`${payments.length} transaction(s)`} />
+          <div className="mt-8 p-6">
+            <div className="space-y-3">
+              {payments.map((payment) => (
+                <div key={payment.id} className="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-200/50 group">
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800">{payment.recipientName}</p>
+                    <p className="text-sm text-gray-600 mt-1">{payment.recipientUPI}</p>
+                    <p className="text-xs text-gray-500 mt-1">{new Date(payment.timestamp).toLocaleDateString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-lg text-gray-800">₹{payment.amount}</p>
+                    <div className={`flex items-center justify-end space-x-1 text-sm font-medium mt-1 ${
+                      payment.status === 'success' ? 'text-green-600' :
+                      payment.status === 'failed' ? 'text-red-600' :
+                      'text-yellow-600'
+                    }`}>
+                      <span className={`w-2 h-2 rounded-full ${
+                        payment.status === 'success' ? 'bg-green-600' :
+                        payment.status === 'failed' ? 'bg-red-600' :
+                        'bg-yellow-600'
+                      }`}></span>
+                      <span className="capitalize">{payment.status}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* UPI Mandates */}
-      {paymentStep === 'form' && (
-        <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">Active Mandates</h3>
-          <div className="bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200/50 rounded-xl p-8 text-center hover:border-cyan-300 transition-all duration-300">
-            <AlertCircle className="w-16 h-16 text-cyan-600 mx-auto mb-4" />
-            <p className="text-cyan-900 font-semibold text-lg">No active mandates</p>
-            <p className="text-sm text-cyan-700 mt-3">Set up recurring payments for regular expenses</p>
-            <button className="mt-6 px-8 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 active:scale-95">
-              Create Mandate
-            </button>
-          </div>
-        </div>
+        </Card>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, Calendar, Bell, CheckCircle } from 'lucide-react';
 import { useFinancialStore, RecurringTransaction } from '../../store/financialStore';
+import { Card, Badge } from '../../components/UI';
 
 export default function RecurringTransactions() {
   const { recurringTransactions, addRecurringTransaction, updateRecurringTransaction, deleteRecurringTransaction } = useFinancialStore();
@@ -130,33 +131,45 @@ export default function RecurringTransactions() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-300/50 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-blue-400 transition-all duration-300">
-          <p className="text-xs sm:text-sm text-blue-700 font-semibold mb-2">Total Recurring</p>
-          <p className="text-2xl sm:text-3xl font-bold text-blue-600">{recurringTransactions.length}</p>
-          <p className="text-xs text-blue-600 mt-2">Active transactions</p>
-        </div>
+        <Card variant="glass" className="border-primary/50">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Total Recurring</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{recurringTransactions.length}</p>
+            </div>
+            <Badge variant="primary">Active</Badge>
+          </div>
+        </Card>
         
-        <div className="bg-gradient-to-br from-red-500/10 to-red-600/10 border border-red-300/50 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-red-400 transition-all duration-300">
-          <p className="text-xs sm:text-sm text-red-700 font-semibold mb-2">Monthly Expenses</p>
-          <p className="text-2xl sm:text-3xl font-bold text-red-600">
-            ₹{Math.abs(Math.min(monthlyTotal, 0)).toLocaleString('en-IN')}
-          </p>
-          <p className="text-xs text-red-600 mt-2">Recurring costs</p>
-        </div>
+        <Card variant="glass" className="border-error/50">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Monthly Expenses</p>
+              <p className="text-2xl sm:text-3xl font-bold text-error">₹{Math.abs(Math.min(monthlyTotal, 0)).toLocaleString('en-IN')}</p>
+            </div>
+            <Badge variant="error">Costs</Badge>
+          </div>
+        </Card>
 
-        <div className="bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-300/50 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-green-400 transition-all duration-300">
-          <p className="text-xs sm:text-sm text-green-700 font-semibold mb-2">Monthly Income</p>
-          <p className="text-2xl sm:text-3xl font-bold text-green-600">
-            ₹{Math.max(monthlyTotal, 0).toLocaleString('en-IN')}
-          </p>
-          <p className="text-xs text-green-600 mt-2">Recurring income</p>
-        </div>
+        <Card variant="glass" className="border-success/50">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Monthly Income</p>
+              <p className="text-2xl sm:text-3xl font-bold text-success">₹{Math.max(monthlyTotal, 0).toLocaleString('en-IN')}</p>
+            </div>
+            <Badge variant="success">Income</Badge>
+          </div>
+        </Card>
 
-        <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-300/50 rounded-xl p-6 hover:border-purple-400 transition-all duration-300">
-          <p className="text-sm text-purple-700 font-semibold mb-2">Categories</p>
-          <p className="text-3xl font-bold text-purple-600">6</p>
-          <p className="text-xs text-purple-600 mt-2">Available types</p>
-        </div>
+        <Card variant="glass" className="border-info/50">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Categories</p>
+              <p className="text-2xl sm:text-3xl font-bold text-info">6</p>
+            </div>
+            <Badge variant="info">Types</Badge>
+          </div>
+        </Card>
       </div>
 
       {/* Form Modal */}
@@ -175,7 +188,7 @@ export default function RecurringTransactions() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g., Netflix Subscription"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 outline-none transition-all"
+                  className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-indigo-500 outline-none transition-all"
                   required
                 />
               </div>
@@ -188,7 +201,7 @@ export default function RecurringTransactions() {
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                     placeholder="0"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-indigo-500 outline-none transition-all"
                     required
                   />
                 </div>

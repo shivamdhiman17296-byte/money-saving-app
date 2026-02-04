@@ -5,15 +5,50 @@ import {
   CreditCard,
   PieChart,
   Send,
-  Settings,
   LogOut,
   Menu,
   X,
   Repeat2,
   TrendingDown,
-  AlertCircle,
+  Home,
+  Target,
+  TrendingUp,
 } from 'lucide-react';
 import { useState } from 'react';
+
+const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const button = e.currentTarget;
+  const rect = button.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // Create ripple element
+  const ripple = document.createElement('span');
+  ripple.style.position = 'absolute';
+  ripple.style.left = `${x}px`;
+  ripple.style.top = `${y}px`;
+  ripple.style.width = '20px';
+  ripple.style.height = '20px';
+  ripple.style.background = 'rgba(99, 102, 241, 0.6)';
+  ripple.style.borderRadius = '50%';
+  ripple.style.transform = 'translate(-50%, -50%)';
+  ripple.style.pointerEvents = 'none';
+  ripple.style.animation = 'rippleClick 0.6s ease-out';
+  ripple.style.zIndex = '10';
+
+  // Add position relative to parent if needed
+  const parent = button.parentElement;
+  if (parent && getComputedStyle(parent).position === 'static') {
+    parent.style.position = 'relative';
+  }
+
+  button.style.position = 'relative';
+  button.style.overflow = 'hidden';
+  button.appendChild(ripple);
+
+  // Remove ripple after animation
+  setTimeout(() => ripple.remove(), 600);
+};
 
 export default function Layout() {
   const { user, logout } = useAuthStore();
@@ -27,61 +62,79 @@ export default function Layout() {
   };
 
   const navItems = [
-    { path: '/dashboard', icon: BarChart3, label: 'Dashboard', color: 'text-cyan-300' },
-    { path: '/transactions', icon: CreditCard, label: 'Transactions', color: 'text-green-300' },
-    { path: '/recurring', icon: Repeat2, label: 'Recurring', color: 'text-blue-300' },
-    { path: '/debt', icon: TrendingDown, label: 'Debts', color: 'text-red-300' },
-    { path: '/payments', icon: Send, label: 'Payments', color: 'text-pink-300' },
-    { path: '/budgets', icon: PieChart, label: 'Budgets', color: 'text-yellow-300' },
-    { path: '/analytics', icon: BarChart3, label: 'Analytics', color: 'text-orange-300' },
-    { path: '/alerts', icon: AlertCircle, label: 'Alerts', color: 'text-red-200' },
-    { path: '/profile', icon: Settings, label: 'Profile', color: 'text-purple-300' },
+    { path: '/dashboard', icon: Home, label: 'Dashboard' },
+    { path: '/transactions', icon: CreditCard, label: 'Transactions' },
+    { path: '/recurring', icon: Repeat2, label: 'Recurring' },
+    { path: '/debt', icon: TrendingDown, label: 'Debts' },
+    { path: '/savings', icon: Target, label: 'Savings' },
+    { path: '/investments', icon: TrendingUp, label: 'Investments' },
+    { path: '/payments', icon: Send, label: 'Payments' },
+    { path: '/budgets', icon: PieChart, label: 'Budgets' },
+    { path: '/analytics', icon: BarChart3, label: 'Analytics' },
   ];
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="flex h-screen bg-gradient-to-br from-slate-950 to-slate-900">
       {/* Sidebar */}
       <div
-        className={`fixed md:static w-64 h-screen bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 text-white transition-all duration-300 z-40 shadow-2xl ${
+        className={`fixed md:static w-72 h-screen bg-gradient-to-b from-slate-800 to-slate-900 text-white transition-all duration-300 z-40 border-r border-slate-700/50 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        <div className="p-6 border-b border-purple-500/30 bg-gradient-to-r from-purple-600/20 to-indigo-600/20">
-          <div className="flex items-center space-x-3 hover:scale-105 transition-transform duration-300">
-            <div className="text-4xl animate-bounce">💰</div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-300 to-cyan-300 bg-clip-text text-transparent">MoneyMaster</h1>
-          </div>
+        {/* Logo Section */}
+        <div className="p-6 border-b border-slate-700/50">
+          <Link to="/dashboard" className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center font-bold text-lg text-white shadow-lg group-hover:shadow-cyan-500/50 transition-all duration-300 group-hover:scale-110">
+              💰
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-xl font-bold text-white tracking-tight">MoneyMaster</h1>
+              <p className="text-xs text-slate-400">Smart Finance</p>
+            </div>
+          </Link>
         </div>
 
-        <nav className="p-6 space-y-2">
-          {navItems.map(({ path, icon: Icon, label, color }) => (
-            <Link
-              key={path}
-              to={path}
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 group ${
-                location.pathname === path
-                  ? 'bg-gradient-to-r from-pink-500/40 to-purple-500/40 border-l-4 border-pink-300 shadow-lg shadow-pink-500/20'
-                  : 'hover:bg-white/10 hover:translate-x-1'
-              }`}
-            >
-              <Icon className={`w-5 h-5 ${color} transition-transform duration-300 group-hover:scale-110`} />
-              <span className="font-medium">{label}</span>
-            </Link>
-          ))}
+        {/* Navigation Items */}
+        <nav className="p-4 space-y-1 flex-1">
+          {navItems.map(({ path, icon: Icon, label }) => {
+            const isActive = location.pathname === path;
+            return (
+              <Link
+                key={path}
+                to={path}
+                onClick={(e) => {
+                  handleNavClick(e);
+                  setSidebarOpen(false);
+                }}
+                className={`nav-item-3d flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-300 group relative overflow-hidden ${
+                  isActive
+                    ? 'bg-indigo-600/20 text-white border-l-2 border-indigo-500 shadow-lg'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                {isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/10 to-cyan-600/10 -z-10" />
+                )}
+                <Icon className={`w-5 h-5 transition-all duration-300 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-indigo-400'}`} />
+                <span>{label}</span>
+                {isActive && <div className="ml-auto w-1 h-1 bg-indigo-400 rounded-full" />}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="absolute bottom-6 left-6 right-6 space-y-3">
-          <div className="bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-lg p-4 border border-purple-400/30 hover:border-pink-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
-            <p className="text-sm font-medium">{user?.full_name}</p>
-            <p className="text-xs text-purple-200">{user?.email}</p>
+        {/* User Profile Section */}
+        <div className="p-4 border-t border-slate-700/50 space-y-3">
+          <div className="bg-slate-700/30 rounded-lg p-4 hover:bg-slate-700/50 transition-all duration-300 hover:border-indigo-500/50 border border-slate-700/50">
+            <p className="text-sm font-semibold text-white truncate">{user?.full_name || 'User'}</p>
+            <p className="text-xs text-slate-400 truncate mt-1">{user?.email}</p>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center space-x-3 px-4 py-3 bg-gradient-to-r from-red-500/80 to-pink-500/80 hover:from-red-600 hover:to-pink-600 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30 hover:scale-105"
+            className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-red-600/20 hover:bg-red-600/30 text-red-300 hover:text-red-200 rounded-lg font-medium transition-all duration-300 border border-red-600/30 hover:border-red-500/50 group"
           >
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
+            <LogOut className="w-4 h-4 transition-transform group-hover:scale-110" />
+            <span>Logout</span>
           </button>
         </div>
       </div>
@@ -89,43 +142,49 @@ export default function Layout() {
       {/* Mobile Menu Toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="md:hidden fixed bottom-6 right-6 z-50 p-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-xl shadow-purple-500/40 hover:shadow-2xl hover:shadow-purple-500/60 hover:scale-110 transition-all duration-300 active:scale-95"
+        className="md:hidden fixed top-6 left-6 z-50 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-lg transition-all duration-300 hover:scale-110 active:scale-95"
         aria-label="Toggle menu"
       >
-        {sidebarOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+        {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-700 border-b border-purple-500/20 px-4 sm:px-6 py-4 flex items-center justify-between shadow-lg">
-          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent truncate">
-            {navItems.find((item) => item.path === location.pathname)?.label || 'Dashboard'}
-          </h2>
-          <div className="hidden sm:flex items-center space-x-4">
-            <div className="text-xs sm:text-sm text-purple-200 bg-purple-500/10 px-2 sm:px-3 py-1 rounded-full border border-purple-400/30 whitespace-nowrap">
+        <div className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50 px-6 py-4 flex items-center justify-between shadow-sm">
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-bold text-white">
+              {navItems.find((item) => item.path === location.pathname)?.label || 'Dashboard'}
+            </h2>
+            <p className="text-xs text-slate-400 mt-1">
               {new Date().toLocaleDateString('en-IN', {
-                weekday: 'short',
+                weekday: 'long',
                 year: 'numeric',
-                month: 'short',
+                month: 'long',
                 day: 'numeric',
               })}
-            </div>
+            </p>
+          </div>
+          <div className="hidden sm:block text-sm text-slate-400">
+            {new Date().toLocaleTimeString('en-IN', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
           </div>
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-900 via-slate-800/50 to-slate-900">
-          <div className="p-4 sm:p-6 md:p-8 max-w-full">
+        <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+          <div className="p-6 md:p-8 max-w-full">
             <Outlet />
           </div>
         </div>
       </div>
 
-      {/* Close sidebar when clicking outside */}
+      {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm transition-all duration-300"
+          className="fixed inset-0 bg-black/40 z-30 md:hidden backdrop-blur-sm transition-all duration-300"
           onClick={() => setSidebarOpen(false)}
         />
       )}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, TrendingDown, Calendar } from 'lucide-react';
 import { useFinancialStore, Debt } from '../../store/financialStore';
+import { Card, Badge } from '../../components/UI';
 
 export default function DebtTracker() {
   const { debts, addDebt, updateDebt, deleteDebt, getTotalDebt, calculateDebtPayoffDate } = useFinancialStore();
@@ -122,33 +123,45 @@ export default function DebtTracker() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-gradient-to-br from-red-500/10 to-red-600/10 border border-red-300/50 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-red-400 transition-all duration-300">
-          <p className="text-xs sm:text-sm text-red-700 font-semibold mb-2">Total Debt</p>
-          <p className="text-2xl sm:text-3xl font-bold text-red-600">₹{totalDebt.toLocaleString('en-IN')}</p>
-          <p className="text-xs text-red-600 mt-2">{debts.length} debts tracked</p>
-        </div>
+        <Card variant="glass" className="border-error/50">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Total Debt</p>
+              <p className="text-2xl sm:text-3xl font-bold text-error">₹{totalDebt.toLocaleString('en-IN')}</p>
+            </div>
+            <Badge variant="error">{debts.length}</Badge>
+          </div>
+        </Card>
 
-        <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-300/50 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-orange-400 transition-all duration-300">
-          <p className="text-xs sm:text-sm text-orange-700 font-semibold mb-2">Avg Interest Rate</p>
-          <p className="text-2xl sm:text-3xl font-bold text-orange-600">{avgInterestRate}%</p>
-          <p className="text-xs text-orange-600 mt-2">Weighted average</p>
-        </div>
+        <Card variant="glass" className="border-warning/50">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Avg Interest</p>
+              <p className="text-2xl sm:text-3xl font-bold text-warning">{avgInterestRate}%</p>
+            </div>
+            <Badge variant="warning">Rate</Badge>
+          </div>
+        </Card>
 
-        <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-300/50 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-purple-400 transition-all duration-300">
-          <p className="text-xs sm:text-sm text-purple-700 font-semibold mb-2">Monthly Payment</p>
-          <p className="text-2xl sm:text-3xl font-bold text-purple-600">₹{monthlyDebtPayment.toLocaleString('en-IN')}</p>
-          <p className="text-xs text-purple-600 mt-2">EMI + Payments</p>
-        </div>
+        <Card variant="glass" className="border-primary/50">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Monthly Payment</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">₹{monthlyDebtPayment.toLocaleString('en-IN')}</p>
+            </div>
+            <Badge variant="primary">EMI</Badge>
+          </div>
+        </Card>
 
-        <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-300/50 rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-blue-400 transition-all duration-300">
-          <p className="text-xs sm:text-sm text-blue-700 font-semibold mb-2">Progress</p>
-          <p className="text-2xl sm:text-3xl font-bold text-blue-600">
-            {debts.length > 0 
-              ? ((debts.reduce((sum, d) => sum + (d.completedEMIs || 0), 0) / debts.reduce((sum, d) => sum + (d.totalEMIs || 1), 0)) * 100).toFixed(0)
-              : '0'}%
-          </p>
-          <p className="text-xs text-blue-600 mt-2">Debt reduction</p>
-        </div>
+        <Card variant="glass" className="border-info/50">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Progress</p>
+              <p className="text-2xl sm:text-3xl font-bold text-info">{debts.length > 0 ? ((debts.reduce((sum, d) => sum + (d.completedEMIs || 0), 0) / debts.reduce((sum, d) => sum + (d.totalEMIs || 1), 0)) * 100).toFixed(0) : '0'}%</p>
+            </div>
+            <Badge variant="info">Done</Badge>
+          </div>
+        </Card>
       </div>
 
       {/* Form Modal */}
@@ -168,7 +181,7 @@ export default function DebtTracker() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g., Home Loan"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
                     required
                   />
                 </div>
@@ -194,7 +207,7 @@ export default function DebtTracker() {
                     value={formData.principal}
                     onChange={(e) => setFormData({ ...formData, principal: e.target.value })}
                     placeholder="0"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
                     required
                   />
                 </div>
@@ -205,7 +218,7 @@ export default function DebtTracker() {
                     value={formData.currentBalance}
                     onChange={(e) => setFormData({ ...formData, currentBalance: e.target.value })}
                     placeholder="0"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
                     required
                   />
                 </div>
@@ -217,7 +230,7 @@ export default function DebtTracker() {
                     value={formData.interestRate}
                     onChange={(e) => setFormData({ ...formData, interestRate: e.target.value })}
                     placeholder="0"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
                     required
                   />
                 </div>
@@ -231,7 +244,7 @@ export default function DebtTracker() {
                     value={formData.emiAmount}
                     onChange={(e) => setFormData({ ...formData, emiAmount: e.target.value })}
                     placeholder="0"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -241,7 +254,7 @@ export default function DebtTracker() {
                     value={formData.totalEMIs}
                     onChange={(e) => setFormData({ ...formData, totalEMIs: e.target.value })}
                     placeholder="0"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -254,7 +267,7 @@ export default function DebtTracker() {
                     value={formData.completedEMIs}
                     onChange={(e) => setFormData({ ...formData, completedEMIs: e.target.value })}
                     placeholder="0"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -263,7 +276,7 @@ export default function DebtTracker() {
                     type="date"
                     value={formData.dueDate}
                     onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
+                    className="w-full px-4 py-2 text-gray-900 border-2 border-gray-200 rounded-lg focus:border-red-500 outline-none transition-all"
                   />
                 </div>
               </div>

@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import 'express-async-errors';
+import paymentRoutes from './routes/paymentRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -236,33 +237,8 @@ interface MockPayment {
 
 const mockPayments: MockPayment[] = [];
 
-app.post('/api/v1/upi/initiate-payment', (req: Request, res: Response) => {
-  const { upi_id, recipient_name, amount } = req.body;
-  const payment: MockPayment = {
-    id: Date.now().toString(),
-    upi_id,
-    recipient_name,
-    amount,
-    status: 'pending',
-    created_at: new Date().toISOString(),
-  };
-  mockPayments.push(payment);
-  res.status(201).json(payment);
-});
-
-app.post('/api/v1/upi/verify-payment', (req: Request, res: Response) => {
-  const { payment_id } = req.body;
-  const payment = mockPayments.find((p) => p.id === payment_id);
-  if (!payment) {
-    return res.status(404).json({ error: 'Payment not found' });
-  }
-  payment.status = 'success';
-  res.status(200).json(payment);
-});
-
-app.get('/api/v1/upi/mandates', (req: Request, res: Response) => {
-  res.status(200).json({ data: [], total: 0 });
-});
+// Mount payment routes with proper error handling
+app.use('/api/v1/upi', paymentRoutes);
 
 // ============ BUDGET ENDPOINTS ============
 

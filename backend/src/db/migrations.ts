@@ -203,7 +203,7 @@ export async function seedDemoData() {
           [50000, 2500, 1200][i],
           ['Income', 'Food', 'Utilities'][i],
           ['credit', 'debit', 'debit'][i],
-          new Date(),
+          new Date().toISOString(),
         ]
       );
     }

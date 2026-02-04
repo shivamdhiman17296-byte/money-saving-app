@@ -36,62 +36,70 @@ export default function Analytics() {
     <div className="space-y-6">
       {/* Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600 rounded-xl p-7 text-white shadow-lg hover:shadow-2xl hover:shadow-green-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 border border-green-400/30 group">
+        <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift group">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold opacity-90">Total Income</h3>
-            <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
-              <TrendingUp className="w-6 h-6 opacity-90 group-hover:scale-110 transition-transform duration-300" />
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Total Income</h3>
+            <div className="p-3 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition-colors">
+              <TrendingUp className="w-5 h-5 text-green-400" />
             </div>
           </div>
-          <p className="text-3xl font-bold">₹{(totalIncome / 100000).toFixed(1)}L</p>
-          <p className="text-xs text-green-100 mt-2 font-medium">Last 6 months</p>
+          <p className="text-3xl font-bold text-green-400">₹{(totalIncome / 100000).toFixed(1)}L</p>
+          <p className="text-xs text-slate-400 mt-2">Last 6 months</p>
         </div>
 
-        <div className="bg-gradient-to-br from-red-500 via-pink-500 to-red-600 rounded-xl p-7 text-white shadow-lg hover:shadow-2xl hover:shadow-red-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 border border-red-400/30 group">
+        <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift group">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold opacity-90">Total Expense</h3>
-            <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
-              <Zap className="w-6 h-6 opacity-90 group-hover:scale-110 transition-transform duration-300" />
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Total Expense</h3>
+            <div className="p-3 bg-red-500/20 rounded-lg group-hover:bg-red-500/30 transition-colors">
+              <Zap className="w-5 h-5 text-red-400" />
             </div>
           </div>
-          <p className="text-3xl font-bold">₹{(totalExpense / 100000).toFixed(1)}L</p>
-          <p className="text-xs text-red-100 mt-2 font-medium">Last 6 months</p>
+          <p className="text-3xl font-bold text-red-400">₹{(totalExpense / 100000).toFixed(1)}L</p>
+          <p className="text-xs text-slate-400 mt-2">Last 6 months</p>
         </div>
 
-        <div className="bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-600 rounded-xl p-7 text-white shadow-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 border border-blue-400/30 group">
+        <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift group">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold opacity-90">Total Savings</h3>
-            <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
-              <Target className="w-6 h-6 opacity-90 group-hover:scale-110 transition-transform duration-300" />
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Total Savings</h3>
+            <div className="p-3 bg-indigo-500/20 rounded-lg group-hover:bg-indigo-500/30 transition-colors">
+              <Target className="w-5 h-5 text-indigo-400" />
             </div>
           </div>
-          <p className="text-3xl font-bold">₹{(totalSavings / 100000).toFixed(1)}L</p>
-          <p className="text-xs text-blue-100 mt-2 font-medium">Last 6 months</p>
+          <p className="text-3xl font-bold text-indigo-400">₹{(totalSavings / 100000).toFixed(1)}L</p>
+          <p className="text-xs text-slate-400 mt-2">Last 6 months</p>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-600 rounded-xl p-7 text-white shadow-lg hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 border border-purple-400/30 group">
+        <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift group">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold opacity-90">Avg Monthly Savings</h3>
-            <div className="p-2 bg-white/10 rounded-lg group-hover:bg-white/20 transition-all duration-300">
-              <TrendingUp className="w-6 h-6 opacity-90 group-hover:scale-110 transition-transform duration-300" />
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Avg Savings</h3>
+            <div className="p-3 bg-cyan-500/20 rounded-lg group-hover:bg-cyan-500/30 transition-colors">
+              <TrendingUp className="w-5 h-5 text-cyan-400" />
             </div>
           </div>
-          <p className="text-3xl font-bold">₹{avgMonthlySavings}</p>
-          <p className="text-xs text-purple-100 mt-2 font-medium">Average</p>
+          <p className="text-3xl font-bold text-cyan-400">₹{avgMonthlySavings}</p>
+          <p className="text-xs text-slate-400 mt-2">Monthly avg</p>
         </div>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Income vs Expense vs Savings */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent mb-6">Monthly Trends</h3>
+        <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-indigo-500/20 rounded-lg">
+              <BarChart className="w-5 h-5 text-indigo-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Monthly Trends</h3>
+              <p className="text-xs text-slate-400 mt-1">Income, Expense & Savings</p>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="month" stroke="#666" />
-              <YAxis />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
+              <XAxis dataKey="month" stroke="#64748b" />
+              <YAxis stroke="#64748b" />
+              <Tooltip contentStyle={{backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#e2e8f0'}} />
               <Legend />
               <Bar dataKey="income" fill="#10b981" />
               <Bar dataKey="expense" fill="#ef4444" />
@@ -101,16 +109,24 @@ export default function Analytics() {
         </div>
 
         {/* Savings Trend */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">Savings Trend</h3>
+        <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-cyan-500/20 rounded-lg">
+              <LineChart className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Savings Trend</h3>
+              <p className="text-xs text-slate-400 mt-1">Monthly savings progression</p>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="month" stroke="#666" />
-              <YAxis stroke="#666" />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
+              <XAxis dataKey="month" stroke="#64748b" />
+              <YAxis stroke="#64748b" />
+              <Tooltip contentStyle={{backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#e2e8f0'}} />
               <Legend />
-              <Line type="monotone" dataKey="savings" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', r: 6 }} activeDot={{ r: 8 }} />
+              <Line type="monotone" dataKey="savings" stroke="#0ea5e9" strokeWidth={3} dot={{ fill: '#0ea5e9', r: 5 }} activeDot={{ r: 7 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -118,8 +134,16 @@ export default function Analytics() {
 
       {/* Spending by Category */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent mb-6">Spending by Category</h3>
+        <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-purple-500/20 rounded-lg">
+              <PieChart className="w-5 h-5 text-purple-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Spending by Category</h3>
+              <p className="text-xs text-slate-400 mt-1">Expense breakdown</p>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -136,28 +160,35 @@ export default function Analytics() {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => `₹${value}`} />
+              <Tooltip formatter={(value) => `₹${value}`} contentStyle={{backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#e2e8f0'}} />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         {/* Category Breakdown */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-cyan-600 bg-clip-text text-transparent mb-6">Category Details</h3>
+        <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-green-500/20 rounded-lg">
+              <Target className="w-5 h-5 text-green-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Category Details</h3>
+              <p className="text-xs text-slate-400 mt-1">Spending by category</p>
+            </div>
+          </div>
           <div className="space-y-3">
             {categoryData.map((category, index) => (
-              <div key={category.name} className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-lg hover:shadow-lg hover:shadow-slate-500/20 transition-all duration-300 hover:scale-102 group border border-slate-200/50 cursor-pointer">
+              <div key={category.name} className="flex items-center justify-between p-4 glass-effect rounded-lg hover-lift group border border-slate-700/50 cursor-pointer stagger-item" style={{animationDelay: `${index * 0.08}s`}}>
                 <div className="flex items-center space-x-4">
                   <div
-                    className="w-4 h-4 rounded-full shadow-lg ring-2 ring-offset-2 group-hover:scale-125 transition-transform duration-300"
+                    className="w-4 h-4 rounded-full shadow-lg group-hover:scale-125 transition-transform duration-300"
                     style={{ 
                       backgroundColor: COLORS[index % COLORS.length],
-                      outlineColor: COLORS[index % COLORS.length] + '40'
                     }}
                   />
-                  <span className="font-semibold text-gray-800 group-hover:text-indigo-700 transition-colors">{category.name}</span>
+                  <span className="font-semibold text-white group-hover:text-slate-200">{category.name}</span>
                 </div>
-                <span className="font-bold text-lg bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">₹{category.value.toLocaleString('en-IN')}</span>
+                <span className="font-bold text-lg text-cyan-400 group-hover:text-cyan-300">₹{category.value.toLocaleString('en-IN')}</span>
               </div>
             ))}
           </div>
@@ -165,22 +196,34 @@ export default function Analytics() {
       </div>
 
       {/* Insights */}
-      <div className="bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200/50 rounded-xl p-8 hover:border-cyan-300 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20">
-        <h3 className="text-2xl font-bold text-cyan-900 mb-6 flex items-center">
-          <span className="text-3xl mr-3">💡</span>
-          Financial Insights
-        </h3>
-        <div className="space-y-4 text-cyan-800">
-          <p className="flex items-start space-x-3 bg-white/50 px-4 py-3 rounded-lg border border-cyan-200/30 hover:bg-white/70 transition-colors">
-            <span className="text-lg">•</span>
-            <span>Your average monthly savings has remained stable at <span className="font-bold text-cyan-900">₹{avgMonthlySavings}</span>, showing consistent financial discipline.</span>
-          </p>
-          <p className="flex items-start space-x-3 bg-white/50 px-4 py-3 rounded-lg border border-cyan-200/30 hover:bg-white/70 transition-colors">
-            <span className="text-lg">•</span>
-            <span>Food & Dining is your largest expense category at <span className="font-bold text-cyan-900">₹15,000/month</span>. Consider reviewing dining options to optimize spending.</span>
-          </p>
-          <p>• Your savings rate is {((totalSavings / totalIncome) * 100).toFixed(1)}%, which is excellent for long-term wealth building.</p>
-          <p>• You've saved ₹{(totalSavings / 100000).toFixed(1)}L in the last 6 months. Keep up the great work!</p>
+      <div className="scroll-reveal card-3d glass-effect rounded-xl p-6 hover-lift border border-cyan-500/20">
+        <h3 className="text-lg font-bold text-white mb-2">💡 Financial Insights</h3>
+        <p className="text-xs text-slate-400 mb-6">Recommendations to improve finances</p>
+        <div className="space-y-3">
+          <div className="flex items-start space-x-3 p-4 glass-effect rounded-lg hover-lift border border-green-500/20 group">
+            <div className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-bold whitespace-nowrap">1</div>
+            <div>
+              <p className="text-white"><span className="font-semibold">Stable Savings:</span> Average monthly savings remains steady at <span className="font-bold text-green-400">₹{avgMonthlySavings}</span>, showing consistent discipline.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3 p-4 glass-effect rounded-lg hover-lift border border-amber-500/20 group">
+            <div className="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-bold whitespace-nowrap">2</div>
+            <div>
+              <p className="text-white"><span className="font-semibold">Optimize Dining:</span> Food & Dining is your largest expense at <span className="font-bold text-amber-400">₹15,000/month</span>. Consider meal planning to reduce costs.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3 p-4 glass-effect rounded-lg hover-lift border border-green-500/20 group">
+            <div className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-bold whitespace-nowrap">3</div>
+            <div>
+              <p className="text-white"><span className="font-semibold">Excellent Savings Rate:</span> Your rate is {((totalSavings / totalIncome) * 100).toFixed(1)}%, great for long-term wealth building.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3 p-4 glass-effect rounded-lg hover-lift border border-indigo-500/20 group">
+            <div className="px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full text-xs font-bold whitespace-nowrap">4</div>
+            <div>
+              <p className="text-white"><span className="font-semibold">Keep Going Strong:</span> You've saved ₹{(totalSavings / 100000).toFixed(1)}L in 6 months. Maintain this trajectory!</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

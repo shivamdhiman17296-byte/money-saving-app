@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, LogIn, Mail, Phone } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore } from '../../store/authStore';
 
 /**
  * Login Component
@@ -14,49 +14,28 @@ export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginType, setLoginType] = useState<'email' | 'phone' | 'biometric'>('email');
   const [phone, setPhone] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [localError, setLocalError] = useState('');
 
-  const { login, loginWithBiometric } = useAuth();
+  const { login, isLoading, error: storeError } = useAuthStore();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
+    setLocalError('');
 
     try {
       const identifier = loginType === 'email' ? email : phone;
-      const result = await login({
-        identifier,
-        password,
-        loginType,
-      });
-
-      if (result.success) {
-        // Navigate to dashboard
-        window.location.href = '/dashboard';
-      }
+      await login(identifier, password);
+      // Navigate to dashboard
+      window.location.href = '/dashboard';
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+      setLocalError(err.message || 'Login failed. Please try again.');
     }
   };
 
   const handleBiometricLogin = async () => {
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const result = await loginWithBiometric();
-      if (result.success) {
-        window.location.href = '/dashboard';
-      }
-    } catch (err: any) {
-      setError(err.message || 'Biometric login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    setLocalError('');
+    // Biometric login not yet implemented
+    setLocalError('Biometric login is not yet available. Please use email or phone login.');
   };
 
   return (
@@ -99,13 +78,22 @@ export const Login: React.FC = () => {
           </div>
 
           {/* Error Message */}
-          {error && (
+          {localError && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
             >
-              {error}
+              {localError}
+            </motion.div>
+          )}
+          {storeError && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
+            >
+              {storeError}
             </motion.div>
           )}
 

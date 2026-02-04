@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { Edit2, Save, X, Lock, Smartphone, Mail, User, TrendingUp, Target, PiggyBank } from 'lucide-react';
+import { Card, CardHeader, Button } from '../../components/UI';
 
 export default function Profile() {
   const { user, setUser, updateFinancialGoals } = useAuthStore();
@@ -49,20 +50,17 @@ export default function Profile() {
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Profile Header */}
-      <div className="bg-white/80 backdrop-blur-xl rounded-lg sm:rounded-xl shadow-lg p-6 sm:p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Profile Settings</h2>
-          <button
+      <Card variant="elevated">
+        <div className="p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-primary">Profile Settings</h2>
+          <Button
+            variant={editMode ? 'error' : 'primary'}
             onClick={() => setEditMode(!editMode)}
-            className={`flex items-center space-x-2 px-4 sm:px-6 py-2.5 rounded-lg transition-all duration-300 font-semibold group w-fit ${
-              editMode
-                ? 'bg-gradient-to-r from-red-500/20 to-pink-500/20 text-red-600 hover:from-red-500/40 hover:to-pink-500/40 border border-red-200/50'
-                : 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-600 hover:from-indigo-500/40 hover:to-purple-500/40 border border-indigo-200/50'
-            }`}
           >
-            {editMode ? <X className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300" /> : <Edit2 className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300" />}
-            <span className="text-sm sm:text-base">{editMode ? 'Cancel' : 'Edit'}</span>
-          </button>
+            {editMode ? <X className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> : <Edit2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />}
+            {editMode ? 'Cancel' : 'Edit'}
+          </Button>
         </div>
 
         {/* Profile Picture */}
@@ -97,7 +95,7 @@ export default function Profile() {
                 name="full_name"
                 value={formData.full_name}
                 onChange={handleChange}
-                className="w-full px-4 sm:px-5 py-2.5 sm:py-3 text-sm border-2 border-indigo-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all duration-300 bg-gradient-to-r from-indigo-50 to-purple-50 hover:shadow-md"
+                className="w-full px-4 sm:px-5 py-2.5 sm:py-3 text-sm text-gray-900 border-2 border-indigo-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all duration-300 bg-gradient-to-r from-indigo-50 to-purple-50 hover:shadow-md"
               />
             ) : (
               <p className="px-4 sm:px-5 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-indigo-50/50 to-purple-50/50 rounded-lg text-gray-800 font-medium border border-indigo-100/50">{formData.full_name}</p>
@@ -118,7 +116,7 @@ export default function Profile() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 sm:px-5 py-2.5 sm:py-3 text-sm border-2 border-purple-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all duration-300 bg-gradient-to-r from-purple-50 to-pink-50 hover:shadow-md"
+                className="w-full px-4 sm:px-5 py-2.5 sm:py-3 text-sm text-gray-900 border-2 border-purple-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all duration-300 bg-gradient-to-r from-purple-50 to-pink-50 hover:shadow-md"
               />
             ) : (
               <p className="px-4 sm:px-5 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-lg text-gray-800 font-medium border border-purple-100/50">{formData.email}</p>
@@ -139,25 +137,20 @@ export default function Profile() {
                 name="phone_number"
                 value={formData.phone_number}
                 onChange={handleChange}
-                className="w-full px-4 sm:px-5 py-2.5 sm:py-3 text-sm border-2 border-pink-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 bg-gradient-to-r from-pink-50 to-red-50 hover:shadow-md"
+                className="w-full px-4 sm:px-5 py-2.5 sm:py-3 text-sm text-gray-900 border-2 border-pink-200 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 bg-gradient-to-r from-pink-50 to-red-50 hover:shadow-md"
               />
             ) : (
               <p className="px-4 sm:px-5 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-pink-50/50 to-red-50/50 rounded-lg text-gray-800 font-medium border border-pink-100/50">{formData.phone_number}</p>
             )}
           </div>
         </div>
-      </div>
+        </div>
+      </Card>
 
       {/* Financial Goals Section */}
-      <div className="bg-gradient-to-br from-cyan-50 to-blue-50 backdrop-blur-xl rounded-lg sm:rounded-xl shadow-lg p-6 sm:p-8 border-2 border-cyan-200/50 hover:shadow-xl transition-shadow duration-300">
-        <h3 className="text-xl sm:text-2xl font-bold text-cyan-900 mb-8 flex items-center space-x-3">
-          <div className="p-2 sm:p-3 bg-cyan-100 rounded-lg flex-shrink-0">
-            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-600" />
-          </div>
-          <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent text-sm sm:text-base">Financial Goals</span>
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+      <Card variant="glass" className="border-info/50">
+        <CardHeader title="💰 Financial Goals" subtitle="Set your income, budget, and savings targets" />
+        <div className="mt-6">
           {/* Monthly Income */}
           <div className="bg-white/80 rounded-lg p-4 sm:p-6 border-2 border-cyan-200/50 hover:border-cyan-300 transition-all duration-300">
             <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-3 flex items-center space-x-2">
@@ -173,7 +166,7 @@ export default function Profile() {
                 value={formData.monthly_income}
                 onChange={handleChange}
                 placeholder="Enter your monthly income"
-                className="w-full px-3 sm:px-4 py-2 text-sm border-2 border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all duration-300 bg-cyan-50 hover:shadow-md"
+                className="w-full px-3 sm:px-4 py-2 text-sm text-gray-900 border-2 border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all duration-300 bg-cyan-50 hover:shadow-md"
               />
             ) : (
               <p className="text-xl sm:text-2xl font-bold text-cyan-700">
@@ -197,7 +190,7 @@ export default function Profile() {
                 value={formData.monthly_budget}
                 onChange={handleChange}
                 placeholder="Enter your monthly budget"
-                className="w-full px-3 sm:px-4 py-2 text-sm border-2 border-green-200 rounded-lg focus:ring-2 focus:ring-green-500/50 focus:border-green-500 outline-none transition-all duration-300 bg-green-50 hover:shadow-md"
+                className="w-full px-3 sm:px-4 py-2 text-sm text-gray-900 border-2 border-green-200 rounded-lg focus:ring-2 focus:ring-green-500/50 focus:border-green-500 outline-none transition-all duration-300 bg-green-50 hover:shadow-md"
               />
             ) : (
               <p className="text-xl sm:text-2xl font-bold text-green-700">
@@ -221,7 +214,7 @@ export default function Profile() {
                 value={formData.saving_goal}
                 onChange={handleChange}
                 placeholder="Enter your saving goal"
-                className="w-full px-4 py-3 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all duration-300 bg-purple-50 hover:shadow-md"
+                className="w-full px-4 py-3 text-gray-900 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all duration-300 bg-purple-50 hover:shadow-md"
               />
             ) : (
               <p className="text-2xl font-bold text-purple-700">
@@ -242,7 +235,7 @@ export default function Profile() {
             <span>Update Financial Goals</span>
           </button>
         )}
-      </div>
+      </Card>
 
       {/* Profile Card Section */}
       <div className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg p-8 border border-white/50 hover:shadow-xl transition-shadow duration-300">

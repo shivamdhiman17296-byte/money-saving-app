@@ -33,10 +33,10 @@ export class AuthService {
    */
   generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
     try {
-      return jwt.sign(payload, this.jwtSecret, {
+      return jwt.sign(payload, this.jwtSecret as string, {
         expiresIn: this.jwtExpiry,
-        algorithm: 'RS256', // In production, use RSA key pair
-      });
+        algorithm: 'HS256',
+      } as any);
     } catch (error) {
       throw new Error(`Failed to generate access token: ${error}`);
     }
@@ -47,10 +47,10 @@ export class AuthService {
    */
   generateRefreshToken(payload: { user_id: string; session_id: string }): string {
     try {
-      return jwt.sign(payload, this.refreshSecret, {
+      return jwt.sign(payload, this.refreshSecret as string, {
         expiresIn: this.refreshExpiry,
         algorithm: 'HS256',
-      });
+      } as any);
     } catch (error) {
       throw new Error(`Failed to generate refresh token: ${error}`);
     }
