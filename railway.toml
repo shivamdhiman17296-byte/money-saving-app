@@ -1,0 +1,12 @@
+# Railway Monorepo Configuration
+[[services]]
+name = "backend"
+source = { root = "backend" }
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+
+[[services]]
+name = "frontend"
+source = { root = "frontend" }
+healthcheckPath = "/"
+healthcheckTimeout = 300
